@@ -29,21 +29,20 @@ for line in lines:
 X_train = np.array(images)
 y_train = np.array(measurements)
 
-print(X_train[0])
-
 # construct a basic network
 from keras.models import Sequential
-from keras.layers import Flatten, Dense
+from keras.layers import Flatten, Dense, Lambda
 
 model = Sequential()
-model.add(Flatten(input_shape=(160,320,3)))
+model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
+model.add(Flatten())
 model.add(Dense(1))
 
 # choose loss function and optimizer, compile the model
 model.compile(loss='mse', optimizer='adam')
 
 # split off validation data, shuffle, train the network
-model.fit(X_train, y_train, validation_split=0.2, shuffle=True)
+model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=2)
 
 # save the resulting model
 model.save('model.h5')

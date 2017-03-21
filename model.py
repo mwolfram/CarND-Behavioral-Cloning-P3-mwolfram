@@ -31,11 +31,24 @@ y_train = np.array(measurements)
 
 # construct a basic network
 from keras.models import Sequential
-from keras.layers import Flatten, Dense, Lambda
+from keras.layers import Flatten, Dense, Lambda, Convolution2D, MaxPooling2D
 
+# Simple model
+#model = Sequential()
+#model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
+#model.add(Flatten())
+#model.add(Dense(1))
+
+# LeNet
 model = Sequential()
 model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
+model.add(Convolution2D(6, 5, 5, activation="relu"))
+model.add(MaxPooling2D())
+model.add(Convolution2D(6, 5, 5, activation="relu"))
+model.add(MaxPooling2D())
 model.add(Flatten())
+model.add(Dense(120))
+model.add(Dense(84))
 model.add(Dense(1))
 
 # choose loss function and optimizer, compile the model

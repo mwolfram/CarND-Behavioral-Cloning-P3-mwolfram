@@ -1,5 +1,11 @@
 # CarND-Behavioral-Cloning-P3-mwolfram
 
+## notes
+* as a starting point, I used the basic model.py from the video
+* I used the training data from udacity for the first model
+
+
+
 ##Writeup
 
 ###You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.

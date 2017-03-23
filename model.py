@@ -1,5 +1,6 @@
 import random
 import numpy as np
+import sys
 
 # set a fixed random seed
 random.seed(1337)
@@ -12,12 +13,19 @@ import sklearn
 from sklearn.model_selection import train_test_split
 import zipfile
 
+RUN_TARGET_FLOYD = "floyd"
+run_target_str = sys.argv[0]
+
 # configuration
+if run_target_str is RUN_TARGET_FLOYD:
+  DATA_FOLDER = "/input/" # for floyd
+else:
+  DATA_FOLDER = "../CarND-Behavioral-Cloning-P3-data/multiple_data/" # on local machine
+
 SIDE_IMAGE_STEERING_BIAS = 0.2
-DATA_FOLDER = "/input/" # for floyd
-#DATA_FOLDER = "../CarND-Behavioral-Cloning-P3-data/multiple_data/"
 VALIDATION_SPLIT = 0.2
 BATCH_SIZE = 32
+
 
 def getCSVLines(csvfilename):
   lines = []
@@ -83,7 +91,11 @@ def generator(samples, batch_size=BATCH_SIZE):
       yield sklearn.utils.shuffle(X_train, y_train)
 
 # read csv data
-samples = getCSVLines("sample_data.csv")
+if run_target_str is RUN_TARGET_FLOYD:
+  samples = getCSVLines("t1_reverse_data.csv")
+  samples.extend(getCSVLines("t1_udacity_data.csv"))
+else:
+  samples = getCSVLines("sample_data.csv")
 
 # create generators for training and validation sets
 train_samples, validation_samples = train_test_split(samples, test_size=VALIDATION_SPLIT)
@@ -148,7 +160,11 @@ model.compile(loss='mse', optimizer='adam')
 model.fit_generator(train_generator, samples_per_epoch=len(train_samples), validation_data=validation_generator, nb_val_samples=len(validation_samples), nb_epoch=5)
 
 # save the resulting model
-model.save('model.h5')
+
+if run_target_str is RUN_TARGET_FLOYD:
+  model.save('/output/model.h5')
+else:
+  model.save('model.h5')
 
 
 

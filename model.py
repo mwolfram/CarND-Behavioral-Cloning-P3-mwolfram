@@ -1,21 +1,27 @@
+import random
+import numpy as np
+
+# set a fixed random seed
+random.seed(1337)
+np.random.seed(1337)
+
 import csv
 import cv2
-import numpy as np
 from random import shuffle
 import sklearn
 from sklearn.model_selection import train_test_split
-
-# TODO random seed
+import zipfile
 
 # configuration
 SIDE_IMAGE_STEERING_BIAS = 0.2
-DATA_FOLDER = "../CarND-Behavioral-Cloning-P3-data/data/"
+DATA_FOLDER = "/input/" # for floyd
+#DATA_FOLDER = "../CarND-Behavioral-Cloning-P3-data/multiple_data/"
 VALIDATION_SPLIT = 0.2
 BATCH_SIZE = 32
 
-def getCSVLines():
+def getCSVLines(csvfilename):
   lines = []
-  with open(DATA_FOLDER + "driving_log.csv") as csvfile:
+  with open(DATA_FOLDER + csvfilename) as csvfile:
     reader = csv.reader(csvfile)
     iterlines = iter(reader)
     next(iterlines)
@@ -27,12 +33,19 @@ def getCSVLines():
 def readImagesAndMeasurements(samples, augment=True):
   images = []
   measurements = []
+  zipcache = {}
   for line in samples:
     for i in range(3):
       source_path = line[i]
       filename = source_path.split('/')[-1]
-      current_path = DATA_FOLDER + "IMG/" + filename
-      image = cv2.imread(current_path)
+      zipname = source_path.split('/')[-2].strip()
+      
+      if zipname not in zipcache.keys():
+        zipcache[zipname] = zipfile.ZipFile(DATA_FOLDER + zipname + ".zip")
+
+      zipped_images = zipcache[zipname]
+      imagedata = zipped_images.read(filename)
+      image = cv2.imdecode(np.frombuffer(imagedata, np.uint8), 1)
       images.append(image)
       measurement = float(line[3])
       if i == 0:
@@ -70,7 +83,7 @@ def generator(samples, batch_size=BATCH_SIZE):
       yield sklearn.utils.shuffle(X_train, y_train)
 
 # read csv data
-samples = getCSVLines()
+samples = getCSVLines("sample_data.csv")
 
 # create generators for training and validation sets
 train_samples, validation_samples = train_test_split(samples, test_size=VALIDATION_SPLIT)
@@ -95,17 +108,34 @@ from keras.layers import Flatten, Dense, Lambda, Cropping2D, Convolution2D, MaxP
 #model.add(Dense(1))
 
 # LeNet
+#model = Sequential()
+#model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
+# TODO preprocessing layers 1x1
+#model.add(Cropping2D(cropping=((70, 25), (0, 0))))
+#model.add(Convolution2D(6, 5, 5, activation="relu"))
+#model.add(MaxPooling2D())
+#model.add(Convolution2D(6, 5, 5, activation="relu"))
+#model.add(MaxPooling2D())
+#model.add(Flatten())
+#model.add(Dense(120))
+#model.add(Dense(84))
+#model.add(Dense(1))
+
+# NVIDIA
 model = Sequential()
 model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
-# TODO preprocessing layers 1x1
 model.add(Cropping2D(cropping=((70, 25), (0, 0))))
-model.add(Convolution2D(6, 5, 5, activation="relu"))
-model.add(MaxPooling2D())
-model.add(Convolution2D(6, 5, 5, activation="relu"))
-model.add(MaxPooling2D())
+model.add(Convolution2D(10, 1, 1, activation="relu")) # let the model choose the best color space
+model.add(Convolution2D(3 , 1, 1, activation="relu")) # --"--
+model.add(Convolution2D(24, 5, 5, subsample=(2, 2),  activation="relu"))
+model.add(Convolution2D(36, 5, 5, subsample=(2, 2),  activation="relu"))
+model.add(Convolution2D(48, 5, 5, subsample=(2, 2),  activation="relu"))
+model.add(Convolution2D(64, 3, 3, activation="relu"))
+model.add(Convolution2D(64, 3, 3, activation="relu"))
 model.add(Flatten())
-model.add(Dense(120))
-model.add(Dense(84))
+model.add(Dense(100))
+model.add(Dense(50))
+model.add(Dense(10))
 model.add(Dense(1))
 
 # choose loss function and optimizer, compile the model
@@ -115,7 +145,7 @@ model.compile(loss='mse', optimizer='adam')
 #model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=2)
 
 # fit model with generator
-model.fit_generator(train_generator, samples_per_epoch=len(train_samples), validation_data=validation_generator, nb_val_samples=len(validation_samples), nb_epoch=3)
+model.fit_generator(train_generator, samples_per_epoch=len(train_samples), validation_data=validation_generator, nb_val_samples=len(validation_samples), nb_epoch=5)
 
 # save the resulting model
 model.save('model.h5')

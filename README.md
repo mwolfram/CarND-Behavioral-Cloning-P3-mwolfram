@@ -22,8 +22,9 @@
 * RESULTS so far: good driving on t1 with datasets t1_udacity, t1_reverse B32 E5 loss: 0.0173 - val_loss: 0.0173
 * RESULTS so far: good driving on t2 with datasets t1_udacity, t1_reverse, t2_forward B32 E5 - BUT: terrible on t1!, possible reason: focus on center line, which is missing on t1!
 * FURTHER IDEAS: all datasets, but with dropout and L2 reg, layer visualization to know what the network focuses on, graph loss and accuracy
-
-
+* added dropout, added history visualization, training on floyd. all datasets
+* still TO DO: L2 reg, layer visualization.
+* FURTHER IDEAS: stronger bias on turning situations (multiply image occurrences by (abs((int)angle)) + 1
 
 
 ##Writeup

@@ -1,8 +1,28 @@
 # CarND-Behavioral-Cloning-P3-mwolfram
 
 ## notes
+* RUNNING SIMULATOR on  640x480, lowest graphics quality, highest performance
 * as a starting point, I used the basic model.py from the video
 * I used the training data from udacity for the first model
+* changed to LeNet
+* augmented data by flipping
+* used all 3 cameras, steering offset 0.2
+* cropping image as described in course
+* normalizing images as described in course (lambda layer)
+* used NVIDIA network
+* added two 1x1 filters to choose color space
+* added training data: two reverse laps t1, two forward laps t2, driven with mouse (simulator settings same, 640x480, lowest quality)
+* changed the code to run easily on floydhub
+* training for 5 epochs, batch size 32
+* tried random seed, cannot reproduce the same results, unfortunately. search indicates that this lies deep within keras and tf
+* train/validation split ratio 0.2
+* optimizer adam, loss function is mean squared error
+* python generator is being used
+* EXPLAIN: data format expected (directly from zips)
+* RESULTS so far: good driving on t1 with datasets t1_udacity, t1_reverse B32 E5 loss: 0.0173 - val_loss: 0.0173
+* RESULTS so far: good driving on t2 with datasets t1_udacity, t1_reverse, t2_forward B32 E5 - BUT: terrible on t1!, possible reason: focus on center line, which is missing on t1!
+* FURTHER IDEAS: all datasets, but with dropout and L2 reg, layer visualization to know what the network focuses on, graph loss and accuracy
+
 
 
 

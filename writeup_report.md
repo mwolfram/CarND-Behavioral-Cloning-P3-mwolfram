@@ -29,6 +29,11 @@
 * so TO DO: get the model from the previous run, get optimum number of epochs, then try curve multiplier (attention lot of curves on t2! overfitting!), L2 reg, visualize!
 * L2 reg did not seem too helpful: EXP 17: W2_reg and dropout everywhere. nice learning curve but really bad performance, almost no turning on T1, less turning on T2
 * added visualization of activations (done with every run, automatically)
+* EXP19 to see what's the best combination: t1 all data, 7EP, 32B, L2 and Dropout everywhere
+* EXP planned: t2 data, same as above
+* EXP planned: back to the roots, L2 taken out, Dropout drastically reduced, all data (try until t2 is feasible)
+* EXP planned: same for t1 data (t1 should then be feasible)
+
 
 ## Writeup
 

@@ -32,7 +32,8 @@
 * EXP20 to see what's the best combination: t1 all data, 7EP, 32B, L2 and Dropout everywhere. Bad, almost no turning. activation maps dark, tested on T1
 * EXP21 planned: t2 data, same as above - more activation, turning: more. tries to find lane center, but overshoots it right away. tested on T2. T1: almost no turning at all, and if: too late.
 * EXP22 planned: back to the roots, L2 taken out, Dropout drastically reduced, all data (try until t2 is feasible) - trouble on the first turn, but quite good turning on rest of the track, sharp turns are still too difficult. T1: finds center quickly, minor oscillation. First turn taken tightly. Bridge: perfect. Missing side marking on right: fail. but hey, it avoids tires :)
-* EXP23 planned: same for t1 data (t1 should then be feasible)
+* EXP23 planned: same for t1 data (t1 should then be feasible) - finds lane center, takes turn little tightly, minimal oscillation, bridge ok. missing lane marking on the right: not ok, leaves road.
+* EXP24 really back to the roots, reduce epochs to 5, model might be overfitting to needing both sides of the lane?
 
 
 ## Writeup

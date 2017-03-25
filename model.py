@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import sys
+import os
 
 # set a fixed random seed
 random.seed(1337)
@@ -31,7 +32,7 @@ PREDICT_IMAGES = ["sample_data/center_2016_12_01_13_31_13_177.jpg", "t2_forward_
 if USE_FLOYD:
   # running on floydhub
   DATA_FOLDER = "/input/" 
-  DATASETS = ["t1_reverse_data.csv", "t1_udacity_data.csv", "t2_forward_data.csv"]
+  DATASETS = ["t1_reverse_data.csv", "t1_udacity_data.csv"]
   EPOCHS = 7
   OUTPUT_FOLDER = "/output/"
 else:
@@ -295,6 +296,9 @@ def generateActivationMapsForImages(images, depths, target_folder="feature_maps/
   for image in images:
     dataset_name = image.split('/')[0].strip()
     filename = image.split('/')[1].strip()
+    
+    if not os.path.exists(OUTPUT_FOLDER + target_folder):
+      os.makedirs(OUTPUT_FOLDER + target_folder)
 
     original_image = getImageFromZip(dataset_name, filename)
     cv2.imwrite(OUTPUT_FOLDER + target_folder + dataset_name + "_" + filename + "_original.png", original_image)

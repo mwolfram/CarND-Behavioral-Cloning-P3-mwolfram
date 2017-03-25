@@ -22,9 +22,11 @@
 * RESULTS so far: good driving on t1 with datasets t1_udacity, t1_reverse B32 E5 loss: 0.0173 - val_loss: 0.0173
 * RESULTS so far: good driving on t2 with datasets t1_udacity, t1_reverse, t2_forward B32 E5 - BUT: terrible on t1!, possible reason: focus on center line, which is missing on t1!
 * FURTHER IDEAS: all datasets, but with dropout and L2 reg, layer visualization to know what the network focuses on, graph loss and accuracy
-
-
-
+* added dropout, added history visualization, training on floyd. all datasets
+* still TO DO: L2 reg, layer visualization.
+* FURTHER IDEAS: stronger bias on turning situations (multiply image occurrences by (abs((int)angle)) + 1
+* exp15: 20ep 32b dropout 0.5 added (TODO show model, can be printed in kerasss), almost ok on t1 - learning curve will show ideal number of epochs, I'll keep that. problems with side markings that are not those stripes, problem before bridge, centered on bridge, serious issue (leaving road) in last curve (weaker marking, and only on one side. might have to emphasize that training data. curb is touched multiple times. t2: less focus on center line (was a lot more without the dropout and with less epochs!), failes in sharp turn 4x (problem: too much straight driving bias??)
+* so TO DO: get the model from the previous run, get optimum number of epochs, then try curve multiplier (attention lot of curves on t2! overfitting!), L2 reg, visualize! 
 
 ##Writeup
 

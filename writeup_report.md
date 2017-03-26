@@ -36,6 +36,7 @@
 * EXP25 really back to the roots, reduce epochs to 5, model might be overfitting to needing both sides of the lane?
 * EXP26 img multiplier- oh yes, more turning, more oscillation too - but no, theee curve is still not ok.
 * EXP27 additional curve dataset (half-open left curve) t1_open_curve.csv
+* EXP28 same dataset, removed dropout layers completely
 
 
 

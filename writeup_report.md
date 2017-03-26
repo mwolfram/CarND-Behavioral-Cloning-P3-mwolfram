@@ -34,6 +34,7 @@
 * EXP22 planned: back to the roots, L2 taken out, Dropout drastically reduced, all data (try until t2 is feasible) - trouble on the first turn, but quite good turning on rest of the track, sharp turns are still too difficult. T1: finds center quickly, minor oscillation. First turn taken tightly. Bridge: perfect. Missing side marking on right: fail. but hey, it avoids tires :)
 * EXP23 planned: same for t1 data (t1 should then be feasible) - finds lane center, takes turn little tightly, minimal oscillation, bridge ok. missing lane marking on the right: not ok, leaves road.
 * EXP25 really back to the roots, reduce epochs to 5, model might be overfitting to needing both sides of the lane?
+* EXP26 img multiplier- oh yes, more turning, more oscillation too
 
 
 ## Writeup

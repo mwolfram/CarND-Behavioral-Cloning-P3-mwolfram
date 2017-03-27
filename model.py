@@ -2,6 +2,7 @@ import random
 import numpy as np
 import sys
 import os
+import math
 
 # set a fixed random seed
 random.seed(1337)
@@ -22,8 +23,8 @@ from keras.layers import Flatten, Dense, Lambda, Cropping2D, Convolution2D, MaxP
 from keras.regularizers import l2
 
 # configuration
-USE_FLOYD = False
-DO_TRAIN = False
+USE_FLOYD = True
+DO_TRAIN = True
 SIDE_IMAGE_STEERING_BIAS = 0.2
 VALIDATION_SPLIT = 0.2
 BATCH_SIZE = 32
@@ -32,13 +33,15 @@ PREDICT_IMAGES = ["sample_data/center_2016_12_01_13_31_13_177.jpg", "t2_forward_
 if USE_FLOYD:
   # running on floydhub
   DATA_FOLDER = "/input/" 
-  DATASETS = ["t1_reverse_data.csv", "t1_udacity_data.csv"]
+  DATASETS = ["t1_reverse_data.csv", "t1_udacity_data.csv", "t1_open_curve.csv"]
+  #DATASETS = ["t2_forward_data.csv", "t1_reverse_data.csv", "t1_udacity_data.csv"]
   EPOCHS = 7
   OUTPUT_FOLDER = "/output/"
 else:
   # running on local machine
   DATA_FOLDER = "../CarND-Behavioral-Cloning-P3-data/multiple_data/" 
   DATASETS = ["sample_data.csv"]
+  #DATASETS = ["t1_reverse_data.csv", "t1_udacity_data.csv", "t1_open_curve.csv"]
   EPOCHS = 2
   OUTPUT_FOLDER = ""
 
@@ -87,17 +90,27 @@ def readImagesAndMeasurements(samples, augment=True):
       zipped_images = zipcache[zipname]
       imagedata = zipped_images.read(filename)
       image = cv2.imdecode(np.frombuffer(imagedata, np.uint8), 1)
-      images.append(image)
+      
       measurement = float(line[3])
+      #image_multiplier = max(1, int(math.log(int((abs(measurement) + 1.0)))))
+      image_multiplier = 1 # use every image once     
+ 
+      # the bigger the steering angle, the more often will the image appear in the dataset 
+      for j in range(image_multiplier):
+        images.append(image)
+
       if i == 0:
         # center image
-        measurements.append(measurement)
+        for j in range(image_multiplier):
+          measurements.append(measurement)
       elif i == 1:
         # left image
-        measurements.append(measurement + SIDE_IMAGE_STEERING_BIAS)
+        for j in range(image_multiplier):
+          measurements.append(measurement + SIDE_IMAGE_STEERING_BIAS)
       elif i == 2:
         # right image
-        measurements.append(measurement - SIDE_IMAGE_STEERING_BIAS)
+        for j in range(image_multiplier):
+          measurements.append(measurement - SIDE_IMAGE_STEERING_BIAS)
 
   if augment:
     augmented_images, augmented_measurements = [], []
@@ -157,27 +170,27 @@ def getNVIDIAModel():
   model = Sequential()
   model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
   model.add(Cropping2D(cropping=((70, 25), (0, 0))))
-  model.add(Convolution2D(10, 1, 1, activation="relu", W_regularizer=l2(0.01))) # let the model choose the best color space
-  model.add(Dropout(0.5))
-  model.add(Convolution2D(3 , 1, 1, activation="relu", W_regularizer=l2(0.01))) # --"--
-  model.add(Dropout(0.5))
-  model.add(Convolution2D(24, 5, 5, subsample=(2, 2),  activation="relu", W_regularizer=l2(0.01)))
-  model.add(Dropout(0.5))
-  model.add(Convolution2D(36, 5, 5, subsample=(2, 2),  activation="relu", W_regularizer=l2(0.01)))
-  model.add(Dropout(0.5))
-  model.add(Convolution2D(48, 5, 5, subsample=(2, 2),  activation="relu", W_regularizer=l2(0.01)))
-  model.add(Dropout(0.5))
-  model.add(Convolution2D(64, 3, 3, activation="relu", W_regularizer=l2(0.01)))
-  model.add(Dropout(0.5))
-  model.add(Convolution2D(64, 3, 3, activation="relu", W_regularizer=l2(0.01)))
+  model.add(Convolution2D(10, 1, 1, activation="relu"))#, W_regularizer=l2(0.01))) # let the model choose the best color space
+#  model.add(Dropout(1.0))
+  model.add(Convolution2D(3 , 1, 1, activation="relu"))#, W_regularizer=l2(0.01))) # --"--
+#  model.add(Dropout(1.0))
+  model.add(Convolution2D(24, 5, 5, subsample=(2, 2)))#,  activation="relu", W_regularizer=l2(0.01)))
+#  model.add(Dropout(1.0))
+  model.add(Convolution2D(36, 5, 5, subsample=(2, 2)))#,  activation="relu", W_regularizer=l2(0.01)))
+#  model.add(Dropout(1.0))
+  model.add(Convolution2D(48, 5, 5, subsample=(2, 2)))#,  activation="relu", W_regularizer=l2(0.01)))
+#  model.add(Dropout(1.0))
+  model.add(Convolution2D(64, 3, 3, activation="relu"))#, W_regularizer=l2(0.01)))
+#  model.add(Dropout(1.0))
+  model.add(Convolution2D(64, 3, 3, activation="relu"))#, W_regularizer=l2(0.01)))
   model.add(Flatten())
-  model.add(Dense(100, W_regularizer=l2(0.01)))
+  model.add(Dense(100))#, W_regularizer=l2(0.01)))
   model.add(Dropout(0.5))
-  model.add(Dense(50, W_regularizer=l2(0.01)))
+  model.add(Dense(50))#, W_regularizer=l2(0.01)))
   model.add(Dropout(0.5))
-  model.add(Dense(10, W_regularizer=l2(0.01)))
+  model.add(Dense(10))#, W_regularizer=l2(0.01)))
   model.add(Dropout(0.5))
-  model.add(Dense(1, W_regularizer=l2(0.01)))
+  model.add(Dense(1))#, W_regularizer=l2(0.01)))
 
   # choose loss function and optimizer, compile the model
   model.compile(loss='mse', optimizer='adam')
@@ -194,43 +207,43 @@ def getPartialNVIDIAModelAndSetWeights(original_model_with_weights, depth=0):
   if depth <= 0: 
     model2.compile(loss='mse', optimizer='adam')
     return model2
-  model2.add(Dropout(0.5))
-  model2.add(Convolution2D(3 , 1, 1, activation="relu", W_regularizer=l2(0.01), weights=model.layers[4].get_weights())) # --"--
+#  model2.add(Dropout(0.5))
+  model2.add(Convolution2D(3 , 1, 1, activation="relu", W_regularizer=l2(0.01), weights=model.layers[3].get_weights())) # --"--
   if depth is 1: 
     model2.compile(loss='mse', optimizer='adam')
     return model2
-  model2.add(Dropout(0.5))
-  model2.add(Convolution2D(24, 5, 5, subsample=(2, 2),  activation="relu", W_regularizer=l2(0.01), weights=model.layers[6].get_weights()))
+#  model2.add(Dropout(0.5))
+  model2.add(Convolution2D(24, 5, 5, subsample=(2, 2),  activation="relu", W_regularizer=l2(0.01), weights=model.layers[4].get_weights()))
   if depth is 2: 
     model2.compile(loss='mse', optimizer='adam')
     return model2
-  model2.add(Dropout(0.5))
-  model2.add(Convolution2D(36, 5, 5, subsample=(2, 2),  activation="relu", W_regularizer=l2(0.01), weights=model.layers[8].get_weights()))
+#  model2.add(Dropout(0.5))
+  model2.add(Convolution2D(36, 5, 5, subsample=(2, 2),  activation="relu", W_regularizer=l2(0.01), weights=model.layers[5].get_weights()))
   if depth is 3: 
     model2.compile(loss='mse', optimizer='adam')
     return model2
-  model2.add(Dropout(0.5))
-  model2.add(Convolution2D(48, 5, 5, subsample=(2, 2),  activation="relu", W_regularizer=l2(0.01), weights=model.layers[10].get_weights()))
+#  model2.add(Dropout(0.5))
+  model2.add(Convolution2D(48, 5, 5, subsample=(2, 2),  activation="relu", W_regularizer=l2(0.01), weights=model.layers[6].get_weights()))
   if depth is 4: 
     model2.compile(loss='mse', optimizer='adam')
     return model2
-  model2.add(Dropout(0.5))
-  model2.add(Convolution2D(64, 3, 3, activation="relu", W_regularizer=l2(0.01), weights=model.layers[12].get_weights()))
+#  model2.add(Dropout(0.5))
+  model2.add(Convolution2D(64, 3, 3, activation="relu", W_regularizer=l2(0.01), weights=model.layers[7].get_weights()))
   if depth is 5: 
     model2.compile(loss='mse', optimizer='adam')
     return model2
-  model2.add(Dropout(0.5))
-  model2.add(Convolution2D(64, 3, 3, activation="relu", W_regularizer=l2(0.01), weights=model.layers[14].get_weights()))
+#  model2.add(Dropout(0.5))
+  model2.add(Convolution2D(64, 3, 3, activation="relu", W_regularizer=l2(0.01), weights=model.layers[8].get_weights()))
   if depth >= 6: 
     model2.compile(loss='mse', optimizer='adam')
     return model2
   model2.add(Flatten())
   model2.add(Dense(100, W_regularizer=l2(0.01)))
-  model2.add(Dropout(0.5))
+#  model2.add(Dropout(0.5))
   model2.add(Dense(50, W_regularizer=l2(0.01)))
-  model2.add(Dropout(0.5))
+#  model2.add(Dropout(0.5))
   model2.add(Dense(10, W_regularizer=l2(0.01)))
-  model2.add(Dropout(0.5))
+#  model2.add(Dropout(0.5))
   model2.add(Dense(1, W_regularizer=l2(0.01)))
 
   model2.compile(loss='mse', optimizer='adam')

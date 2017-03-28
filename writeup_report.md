@@ -5,8 +5,6 @@
 * augmented data by flipping
 * used all 3 cameras, steering offset 0.2
 * cropping image as described in course
-* used NVIDIA network
-* added two 1x1 filters to choose color space
 * added training data: two reverse laps t1, two forward laps t2, driven with mouse (simulator settings same, 640x480, lowest quality)
 * changed the code to run easily on floydhub
 * training for 5 epochs, batch size 32
@@ -105,6 +103,8 @@ model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
 # TODO Dropout
 # TODO subsampling
 # TODO L2 Regularization
+# TODO cropping
+# TODO Choosing color space
 
 #### 2. Attempts to reduce overfitting in the model
 
@@ -128,6 +128,8 @@ The model used an adam optimizer, so the learning rate was not tuned manually. T
 model.compile(loss='mse', optimizer='adam')
 ```
 
+# TODO epochs
+# TODO batch size
 
 #### 4. Appropriate training data
 
@@ -135,15 +137,29 @@ Training data was chosen to keep the vehicle driving on the road.
 
 For details about how I created the training data, see the next section. 
 
+# TODO add training data description here? maybe as an overview
+
+
 ### Model Architecture and Training Strategy
 
 #### 1. Solution Design Approach
 
-The overall strategy for deriving a model architecture was to ...
+The overall strategy for deriving a model architecture was to first follow the instructions in the intro videos as precisely as possible to get to a good initial solution and then tweak model and data to get a better driving behaviour and also enable the model to drive on track 2. 
 
-My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
+So I quickly ended up using the NVIDIA model as a basis and added dropout layers, L2 regularization as well as two consecutive 1x1 filters on top to let the model choose the best color representation.
 
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
+In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. Unfortunately, the MSE loss function never seemed to be a good indicator for how well the model would perform. Sample history graphs can be seen here:
+
+# TODO attach history objects
+# TODO other metrics?
+
+I recorded two reverse laps on track 1 and trained the model on a combination of the Udacity data and my self-recorded laps. The results looked good but the car kept leaving the track in the half-open curve after the bridge.
+
+# TODO half-open curve after bridge image
+
+To combat this, I recorded multiple runs of forward and backward driving data from that sector. This already resulted in a good overall performance on the whole track. The car would not stick 100% to the track center, but would never leave the track, even at a speed of 20mph
+
+
 
 To combat the overfitting, I modified the model so that ...
 
@@ -163,9 +179,15 @@ Here is a visualization of the architecture (note: visualizing the architecture 
 
 #### 3. Creation of the Training Set & Training Process
 
-To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
+To capture good driving behavior, I recorded two reverse laps on track one using center lane driving. Here is an example image of center lane driving:
 
 ![alt text][image2]
+
+I used the data provided by Udacity in combination with my own data.
+
+# TODO recovery data - if not, delete below section and write instead:
+
+I never had to record recovery driving, as 
 
 I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
 

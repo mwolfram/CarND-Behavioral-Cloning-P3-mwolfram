@@ -231,11 +231,7 @@ This resulted in beautiful training history graphs (example below), but unfortun
 !["Training history with L2 regularization"][history_with_l2]
 *Training history with L2 regularization*
 
-# TOOD training history graph with L2 reg
-
-
-# TODO link to driving videoation
-
+# TODO link to driving video
 
 #### 2. Final Model Architecture
 

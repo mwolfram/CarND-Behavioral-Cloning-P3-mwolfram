@@ -1,7 +1,6 @@
 # CarND-Behavioral-Cloning-P3-mwolfram
 
 ## notes
-* RUNNING SIMULATOR on  640x480, lowest graphics quality, highest performance
 * as a starting point, I used the basic model.py from the video
 * I used the training data from udacity for the first model
 * changed to LeNet
@@ -38,12 +37,6 @@
 * EXP27 additional curve dataset (half-open left curve) t1_open_curve.csv
 * EXP28 same dataset, removed dropout layers completely
 
-
-
-## Writeup
-
-### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
-
 ---
 
 **Behavioral Cloning Project**
@@ -67,7 +60,7 @@ The goals / steps of this project are the following:
 [image7]: ./examples/placeholder_small.png "Flipped Image"
 
 ## Rubric Points
-### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
+### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.
 
 ---
 ### Files Submitted & Code Quality
@@ -78,7 +71,7 @@ My project includes the following files:
 * model.py containing the script to create and train the model
 * drive.py for driving the car in autonomous mode
 * model.h5 containing a trained convolution neural network 
-* writeup_report.md or writeup_report.pdf summarizing the results
+* writeup_report.md summarizing the results
 
 #### 2. Submission includes functional code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
@@ -86,17 +79,35 @@ Using the Udacity provided simulator and my drive.py file, the car can be driven
 python drive.py model.h5
 ```
 
+The simulator has to be running with the lowest graphics quality settings (Fastest), at a resolution of 640x480. These are the settings under which data was collected and the driving performance was tested.
+
 #### 3. Submission code is usable and readable
 
-The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works.
+The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works. You'll find a configuration section on top of the file. Here you can choose which datasets to run through the pipeline, with which hyper-parameters and whether the code will run on a local machine or on floydhub.
 
 ### Model Architecture and Training Strategy
 
 #### 1. An appropriate model architecture has been employed
 
-My model consists of a convolution neural network with 3x3 filter sizes and depths between 32 and 128 (model.py lines 18-24) 
+# TODO check exact line of model
 
-The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18). 
+My model consists of a convolution neural network with 1x1, 3x3 and 5x5 filter sizes and depths between 3 and 64 (model.py lines 173-201): It's basically the NVIDIA model taken from the project introduction video. I experimented with the proposed models (a basic one to see whether training works at all and LeNet) and ended up using the NVIDIA model, as the increase in performance compared to LeNet was clearly visible.
+
+* The model includes RELU layers to introduce nonlinearity after every single convolutional layer. Example:
+```python
+model.add(Convolution2D(64, 3, 3, activation="relu"))
+```
+
+* The model is is normalized in the model using a Keras lambda layer. Here is the layer implementation I used (as explained in the intro videos):
+```python
+model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
+```
+
+# TODO model visualization
+
+# TODO Dropout
+# TODO subsampling
+# TODO L2 Regularization
 
 #### 2. Attempts to reduce overfitting in the model
 

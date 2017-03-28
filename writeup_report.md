@@ -1,9 +1,6 @@
 # CarND-Behavioral-Cloning-P3-mwolfram
 
 ## notes
-* I used the training data from udacity for the first model
-* augmented data by flipping
-* used all 3 cameras, steering offset 0.2
 * cropping image as described in course
 * added training data: two reverse laps t1, two forward laps t2, driven with mouse (simulator settings same, 640x480, lowest quality)
 * changed the code to run easily on floydhub
@@ -80,6 +77,15 @@ The simulator has to be running with the lowest graphics quality settings (Faste
 
 The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works. You'll find a configuration section on top of the file. Here you can choose which datasets to run through the pipeline, with which hyper-parameters and whether the code will run on a local machine or on floydhub.
 
+#### 4. Usage
+
+* use which dataset
+* floydhub or local
+* hyper-params in config section
+* activate/deactivate oversampling
+* activate/deactivate augmentation
+
+
 ### Model Architecture and Training Strategy
 
 #### 1. An appropriate model architecture has been employed
@@ -99,6 +105,7 @@ model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
 ```
 
 # TODO model visualization
+![alt text][image1]
 
 # TODO Dropout
 # TODO subsampling
@@ -144,9 +151,25 @@ For details about how I created the training data, see the next section.
 
 #### 1. Solution Design Approach
 
-The overall strategy for deriving a model architecture was to first follow the instructions in the intro videos as precisely as possible to get to a good initial solution and then tweak model and data to get a better driving behaviour and also enable the model to drive on track 2. 
+The overall strategy for deriving a model architecture was to first follow the instructions in the intro videos as precisely as possible to get to a good initial solution and then tweak model and data to get a better driving behaviour and also enable the model to drive on track 2.
 
 So I quickly ended up using the NVIDIA model as a basis and added dropout layers, L2 regularization as well as two consecutive 1x1 filters on top to let the model choose the best color representation.
+
+I applied augmentation by flipping images and measurements:
+```python
+augmented_images, augmented_measurements = [], []
+for image, measurement in zip(images, measurements):
+  augmented_images.append(image)
+  augmented_measurements.append(measurement)
+  augmented_images.append(cv2.flip(image, 1))
+  augmented_measurements.append(measurement*-1.0)
+return augmented_images, augmented_measurements
+```
+
+I used all three camera images, with a steering bias of 0.2 initially, later 0.4. This parameter can be set in the following line in the configuration section:
+```python
+SIDE_IMAGE_STEERING_BIAS = 0.4
+```
 
 In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. Unfortunately, the MSE loss function never seemed to be a good indicator for how well the model would perform. Sample history graphs can be seen here:
 
@@ -159,27 +182,31 @@ I recorded two reverse laps on track 1 and trained the model on a combination of
 
 To combat this, I recorded multiple runs of forward and backward driving data from that sector. This already resulted in a good overall performance on the whole track. The car would not stick 100% to the track center, but would never leave the track, even at a speed of 20mph
 
+On to track 2, I recorded two laps of forward driving (center driving). When training the model on track 2 only, the results are very promising. The car stays on the center of the road and can drive through the whole track without any problems. However, when using this model or when using models that were trained on track 1 and track 2 together, the performance on track 1 decreases dramatically. The model seems to concentrate too much on the center line, which is missing on track 1. 
+
+To visualize and thus confirm this behaviour, 
+# TODO visualized layers
+
+To combat the overfitting, I added L2 regularization in every layer with a beta value of 0.01. An example can be seen here:
+```python
+SIDE_IMAGE_STEERING_BIAS = 0.4
+```
+
+This resulted in beautiful training history graphs (example below), but unfortunately the driving performance was really bad. The model had a very strong bias on straight driving and would leave the track in the first curve. So, L2 regularization was removed.
+
+# TOOD training history graph with L2 reg
 
 
-To combat the overfitting, I modified the model so that ...
+# TODO link to driving video
 
-Then I ... 
-
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
-
-At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
 
 #### 2. Final Model Architecture
 
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
-
-Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
-
-![alt text][image1]
+The final model architecture is described in this document under "Model Architecture and Training Strategy".
 
 #### 3. Creation of the Training Set & Training Process
 
-To capture good driving behavior, I recorded two reverse laps on track one using center lane driving. Here is an example image of center lane driving:
+To capture good driving behavior, I recorded two reverse laps on track one using center lane driving. Here is an example image of center lane driving.
 
 ![alt text][image2]
 
@@ -187,20 +214,21 @@ I used the data provided by Udacity in combination with my own data.
 
 # TODO recovery data - if not, delete below section and write instead:
 
-I never had to record recovery driving, as 
+I never had to record recovery driving, as I was using imagery from all three cameras with steering offsets. This yielded stable recoveries from the sides. The same image of center driving, seen from all three cameras:
 
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
-
+# TODO image from all three cameras center driving 
 ![alt text][image3]
 ![alt text][image4]
 ![alt text][image5]
 
-Then I repeated this process on track two in order to get more data points.
+For track 2, I recorded two laps of forward driving on the center line. 
 
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
+To augment the data set, I flipped images and angles and added these new data points. This was necessary because the especially track 1 has a strong bias on left turns, but the model should generalize over left and right turns. For example, here is an image that has then been flipped:
 
 ![alt text][image6]
 ![alt text][image7]
+
+Another shortcoming of the dataset is 
 
 Etc ....
 

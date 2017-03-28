@@ -2,12 +2,8 @@
 
 ## notes
 * cropping image as described in course
-* added training data: two reverse laps t1, two forward laps t2, driven with mouse (simulator settings same, 640x480, lowest quality)
-* changed the code to run easily on floydhub
 * training for 5 epochs, batch size 32
 * tried random seed, cannot reproduce the same results, unfortunately. search indicates that this lies deep within keras and tf
-* train/validation split ratio 0.2
-* optimizer adam, loss function is mean squared error
 * python generator is being used
 * EXPLAIN: data format expected (directly from zips)
 * RESULTS so far: good driving on t1 with datasets t1_udacity, t1_reverse B32 E5 loss: 0.0173 - val_loss: 0.0173

@@ -43,13 +43,14 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/placeholder.png "Model Visualization"
-[image2]: ./examples/placeholder.png "Grayscaling"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
-[image4]: ./examples/placeholder_small.png "Recovery Image"
-[image5]: ./examples/placeholder_small.png "Recovery Image"
-[image6]: ./examples/placeholder_small.png "Normal Image"
-[image7]: ./examples/placeholder_small.png "Flipped Image"
+[center_driving_left]: ./writeup_images/left_2016_12_01_13_30_48_287.jpg "Center Driving, left camera"
+[center_driving_center]: ./writeup_images/center_2016_12_01_13_30_48_287.jpg "Center Driving, center camera"
+[center_driving_right]: ./writeup_images/right_2016_12_01_13_30_48_287.jpg "Center Driving, right camera"
+[image4]: ./writeup_images/placeholder_small.png "Recovery Image"
+[image5]: ./writeup_images/placeholder_small.png "Recovery Image"
+[image6]: ./writeup_images/placeholder_small.png "Normal Image"
+[image7]: ./writeup_images/placeholder_small.png "Flipped Image"
+
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.
@@ -208,25 +209,19 @@ The final model architecture is described in this document under "Model Architec
 
 To capture good driving behavior, I recorded two reverse laps on track one using center lane driving. Here is an example image of center lane driving.
 
-![alt text][image2]
+!["Center Driving, center camera"][center_driving_center]
 
 I used the data provided by Udacity in combination with my own data.
 
-# TODO recovery data - if not, delete below section and write instead:
-
 I never had to record recovery driving, as I was using imagery from all three cameras with steering offsets. This yielded stable recoveries from the sides. The same image of center driving, seen from all three cameras:
 
-# TODO image from all three cameras center driving 
-![alt text][image3]
-![alt text][image4]
-![alt text][image5]
+!["Center Driving, left camera"][center_driving_left]
+!["Center Driving, center camera"][center_driving_center]
+!["Center Driving, right camera"][center_driving_right]
 
 For track 2, I recorded two laps of forward driving on the center line. 
 
-To augment the data set, I flipped images and angles and added these new data points. This was necessary because the especially track 1 has a strong bias on left turns, but the model should generalize over left and right turns. For example, here is an image that has then been flipped:
-
-![alt text][image6]
-![alt text][image7]
+To augment the data set, I flipped images and angles and added these new data points. This was necessary because the especially track 1 has a strong bias on left turns, but the model should generalize over left and right turns. Images and measurements are flipped on-the-fly, the code is shown under "Model Architecture and Training Strategy, section 1".
 
 Another shortcoming of the dataset is that steering information (especially sharp turns) are relatively sparse. I therefore added an oversampling function, which will add csv lines to the dataset multiple times, depending on the absolute value of the steering measurement. I experimented with ln(abs(measurement)) and the measurement as is as multipliers:
 ```python

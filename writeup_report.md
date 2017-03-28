@@ -46,8 +46,8 @@ The goals / steps of this project are the following:
 [center_driving_left]: ./writeup_images/left_2016_12_01_13_30_48_287.jpg "Center Driving, left camera"
 [center_driving_center]: ./writeup_images/center_2016_12_01_13_30_48_287.jpg "Center Driving, center camera"
 [center_driving_right]: ./writeup_images/right_2016_12_01_13_30_48_287.jpg "Center Driving, right camera"
-[image4]: ./writeup_images/placeholder_small.png "Recovery Image"
-[image5]: ./writeup_images/placeholder_small.png "Recovery Image"
+[current_model_history]: ./history.png "Current Model Training History"
+[history_with_l2]: ./writeup_images/history_with_l2.png "Training History with L2 regularization"
 [image6]: ./writeup_images/placeholder_small.png "Normal Image"
 [image7]: ./writeup_images/placeholder_small.png "Flipped Image"
 
@@ -80,6 +80,7 @@ The model.py file contains the code for training and saving the convolution neur
 
 #### 4. Usage
 
+# TODO
 * use which dataset
 * floydhub or local
 * hyper-params in config section
@@ -174,7 +175,9 @@ SIDE_IMAGE_STEERING_BIAS = 0.4
 
 In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. Unfortunately, the MSE loss function never seemed to be a good indicator for how well the model would perform. Sample history graphs can be seen here:
 
-# TODO attach history objects
+!["Current Model Training History"][current_model_history]
+*Current Model Training History*
+
 # TODO other metrics?
 
 I recorded two reverse laps on track 1 and trained the model on a combination of the Udacity data and my self-recorded laps. The results looked good but the car kept leaving the track in the half-open curve after the bridge.
@@ -195,10 +198,13 @@ SIDE_IMAGE_STEERING_BIAS = 0.4
 
 This resulted in beautiful training history graphs (example below), but unfortunately the driving performance was really bad. The model had a very strong bias on straight driving and would leave the track in the first curve. So, L2 regularization was removed.
 
+!["Training history with L2 regularization"][history_with_l2]
+*Training history with L2 regularization*
+
 # TOOD training history graph with L2 reg
 
 
-# TODO link to driving video
+# TODO link to driving videoation
 
 
 #### 2. Final Model Architecture

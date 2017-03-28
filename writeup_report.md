@@ -48,8 +48,8 @@ The goals / steps of this project are the following:
 [center_driving_right]: ./writeup_images/right_2016_12_01_13_30_48_287.jpg "Center Driving, right camera"
 [current_model_history]: ./history.png "Current Model Training History"
 [history_with_l2]: ./writeup_images/history_with_l2.png "Training History with L2 regularization"
-[image6]: ./writeup_images/placeholder_small.png "Normal Image"
-[image7]: ./writeup_images/placeholder_small.png "Flipped Image"
+[sample_track2]: ./feature_maps/t2_forward_data_center_2017_03_22_17_03_16_764.jpg_original.png "Original image from track 2"
+[activation_track2]: ./feature_maps/t2_forward_data_center_2017_03_22_17_03_16_764.jpg_0_features.png "Activations from image from track 2"
 
 
 ## Rubric Points
@@ -78,14 +78,46 @@ The simulator has to be running with the lowest graphics quality settings (Faste
 
 The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works. You'll find a configuration section on top of the file. Here you can choose which datasets to run through the pipeline, with which hyper-parameters and whether the code will run on a local machine or on floydhub.
 
-#### 4. Usage
+```python
+# configuration
+USE_FLOYD = True
+DO_TRAIN = True
+SIDE_IMAGE_STEERING_BIAS = 0.4
+VALIDATION_SPLIT = 0.2
+BATCH_SIZE = 32
+PREDICT_IMAGES = ["sample_data/center_2016_12_01_13_31_13_177.jpg", "t2_forward_data/center_2017_03_22_17_03_16_764.jpg"]
 
-# TODO
-* use which dataset
-* floydhub or local
-* hyper-params in config section
-* activate/deactivate oversampling
-* activate/deactivate augmentation
+if USE_FLOYD:
+  # running on floydhub
+  DATA_FOLDER = "/input/"
+  DATASETS = ["t1_reverse_data.csv", "t1_udacity_data.csv", "t1_open_curve.csv", "t2_forward_data.csv"]
+  EPOCHS = 10
+  OUTPUT_FOLDER = "/output/"
+else:
+  # running on local machine
+  DATA_FOLDER = "../CarND-Behavioral-Cloning-P3-data/multiple_data/"
+  DATASETS = ["sample_data.csv"]
+  EPOCHS = 2
+  OUTPUT_FOLDER = ""
+```
+
+Augmentation by flipping can be activated/deactivated in the following function:
+```python
+def readImagesAndMeasurements(samples, augment=True):
+```
+
+The script can also be used to a load previous weights from model.h5 and visualize the activations of hidden layers in the network. By default, this is done for the first few convolutional layers and the resulting feature maps are saved in the folder feature_maps. A sample folder is commited to this github repository, but it will be overwritten on the first run of model.py. The PREDICT_IMAGES setting allows to choose images that are used to get the activations. A sample can be seen here:
+
+!["Original image from track 2"][sample_track2]
+*Original image from track 2*
+
+!["Current Model Training History"][activation_track2]
+*Activations from image from track 2*
+
+
+#### 4. Training Data Format
+
+# TODO describe data format and why it was necessary
 
 
 ### Model Architecture and Training Strategy

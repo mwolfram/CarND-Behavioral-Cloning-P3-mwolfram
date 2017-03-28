@@ -216,8 +216,13 @@ I used the data provided by Udacity in combination with my own data.
 I never had to record recovery driving, as I was using imagery from all three cameras with steering offsets. This yielded stable recoveries from the sides. The same image of center driving, seen from all three cameras:
 
 !["Center Driving, left camera"][center_driving_left]
+*Center Driving, left camera*
+
 !["Center Driving, center camera"][center_driving_center]
+*Center Driving, center camera*
+
 !["Center Driving, right camera"][center_driving_right]
+*Center Driving, right camera*
 
 For track 2, I recorded two laps of forward driving on the center line. 
 

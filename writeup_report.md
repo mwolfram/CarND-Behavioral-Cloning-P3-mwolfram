@@ -228,13 +228,16 @@ To augment the data set, I flipped images and angles and added these new data po
 ![alt text][image6]
 ![alt text][image7]
 
-Another shortcoming of the dataset is 
+Another shortcoming of the dataset is that steering information (especially sharp turns) are relatively sparse. I therefore added an oversampling function, which will add csv lines to the dataset multiple times, depending on the absolute value of the steering measurement. I experimented with ln(abs(measurement)) and the measurement as is as multipliers:
+```python
+def oversample(samples):
+[...]
+```
 
-Etc ....
+applied here:
+```python
+# read csv data and oversample to account for imbalanced dataset
+samples = oversample(getCSVLinesFromDatasets(DATA_FOLDER, DATASETS))
+```
 
-After the collection process, I had X number of data points. I then preprocessed this data by ...
 
-
-I finally randomly shuffled the data set and put Y% of the data into a validation set. 
-
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.

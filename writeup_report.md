@@ -1,13 +1,10 @@
 # CarND-Behavioral-Cloning-P3-mwolfram
 
 ## notes
-* as a starting point, I used the basic model.py from the video
 * I used the training data from udacity for the first model
-* changed to LeNet
 * augmented data by flipping
 * used all 3 cameras, steering offset 0.2
 * cropping image as described in course
-* normalizing images as described in course (lambda layer)
 * used NVIDIA network
 * added two 1x1 filters to choose color space
 * added training data: two reverse laps t1, two forward laps t2, driven with mouse (simulator settings same, 640x480, lowest quality)
@@ -98,7 +95,7 @@ My model consists of a convolution neural network with 1x1, 3x3 and 5x5 filter s
 model.add(Convolution2D(64, 3, 3, activation="relu"))
 ```
 
-* The model is is normalized in the model using a Keras lambda layer. Here is the layer implementation I used (as explained in the intro videos):
+* The model is normalized in the model using a Keras lambda layer. Here is the layer implementation I used (as explained in the intro videos):
 ```python
 model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
 ```
@@ -111,17 +108,30 @@ model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
 
 #### 2. Attempts to reduce overfitting in the model
 
-The model contains dropout layers in order to reduce overfitting (model.py lines 21). 
+The model contains dropout layers in order to reduce overfitting. These layers are positioned between the flat, fully connected layers of the network. I did not use dropout layers between convolution layers. The steering signals seemed weaker in these cases and were not strong enough to keep the car on track even in slight curves.
 
-The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+The dataset in use was split to training and validation with a 0.2 ratio. This parameter can be set in the following code line in the configuration section of the model.py file:
+```python
+VALIDATION_SPLIT = 0.2
+```
+
+The actual splitting happens here, using a function from sklearn:
+```python
+train_samples, validation_samples = train_test_split(samples, test_size=VALIDATION_SPLIT)
+```
 
 #### 3. Model parameter tuning
 
-The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 25).
+The model used an adam optimizer, so the learning rate was not tuned manually. The adam optimizer is chosen using the following code:
+```python
+# choose loss function and optimizer, compile the model
+model.compile(loss='mse', optimizer='adam')
+```
+
 
 #### 4. Appropriate training data
 
-Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road ... 
+Training data was chosen to keep the vehicle driving on the road.
 
 For details about how I created the training data, see the next section. 
 

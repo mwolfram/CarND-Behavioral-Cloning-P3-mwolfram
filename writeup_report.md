@@ -106,6 +106,13 @@ The generator is implemented in the following function:
 def generator(samples, batch_size=BATCH_SIZE):
 ```
 
+and is called when the model is trained:
+
+```python
+# fit model with generator
+history_object = model.fit_generator(train_generator, samples_per_epoch=len(train_samples), validation_data=validation_generator, nb_val_samples=len(validation_samples), nb_epoch=EPOCHS)
+```
+
 ### Model Architecture and Training Strategy
 
 #### 1. An appropriate model architecture has been employed

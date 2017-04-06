@@ -96,6 +96,15 @@ The format I'm storing training data in had to be changed, mainly to integrate b
 
 This way, I can mix various datasets by just setting the list of data-ids in my configuration section in the model.py file. Using zip files allows me to upload larger sets of images to floydhub. My CSV files as well as the zipped images are contained in the <DATA_FOLDER>, which can also be set in model.py
 
+#### 5. Generator for preparing and feeding data into the network
+
+Instead of loading and preparing all the data at once, which would not be possible due to the high memory requirements, I use a generator that runs in an endless loop and generates batches of data from the dataset on demand.
+
+The generator is implemented in the following function:
+
+```python
+def generator(samples, batch_size=BATCH_SIZE):
+```
 
 ### Model Architecture and Training Strategy
 

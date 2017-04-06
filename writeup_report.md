@@ -1,25 +1,5 @@
 # CarND-Behavioral-Cloning-P3-mwolfram
 
-## notes
-* RESULTS so far: good driving on t1 with datasets t1_udacity, t1_reverse B32 E5 loss: 0.0173 - val_loss: 0.0173
-* RESULTS so far: good driving on t2 with datasets t1_udacity, t1_reverse, t2_forward B32 E5 - BUT: terrible on t1!, possible reason: focus on center line, which is missing on t1!
-* FURTHER IDEAS: all datasets, but with dropout and L2 reg, layer visualization to know what the network focuses on, graph loss and accuracy
-* added dropout, added history visualization, training on floyd. all datasets
-* still TO DO: L2 reg, layer visualization.
-* FURTHER IDEAS: stronger bias on turning situations (multiply image occurrences by (abs((int)angle)) + 1
-* exp15: 20ep 32b dropout 0.5 added (TODO show model, can be printed in kerasss), almost ok on t1 - learning curve will show ideal number of epochs, I'll keep that. problems with side markings that are not those stripes, problem before bridge, centered on bridge, serious issue (leaving road) in last curve (weaker marking, and only on one side. might have to emphasize that training data. curb is touched multiple times. t2: less focus on center line (was a lot more without the dropout and with less epochs!), failes in sharp turn 4x (problem: too much straight driving bias??)
-* so TO DO: get the model from the previous run, get optimum number of epochs, then try curve multiplier (attention lot of curves on t2! overfitting!), L2 reg, visualize!
-* L2 reg did not seem too helpful: EXP 17: W2_reg and dropout everywhere. nice learning curve but really bad performance, almost no turning on T1, less turning on T2
-* added visualization of activations (done with every run, automatically)
-* EXP20 to see what's the best combination: t1 all data, 7EP, 32B, L2 and Dropout everywhere. Bad, almost no turning. activation maps dark, tested on T1
-* EXP21 planned: t2 data, same as above - more activation, turning: more. tries to find lane center, but overshoots it right away. tested on T2. T1: almost no turning at all, and if: too late.
-* EXP22 planned: back to the roots, L2 taken out, Dropout drastically reduced, all data (try until t2 is feasible) - trouble on the first turn, but quite good turning on rest of the track, sharp turns are still too difficult. T1: finds center quickly, minor oscillation. First turn taken tightly. Bridge: perfect. Missing side marking on right: fail. but hey, it avoids tires :)
-* EXP23 planned: same for t1 data (t1 should then be feasible) - finds lane center, takes turn little tightly, minimal oscillation, bridge ok. missing lane marking on the right: not ok, leaves road.
-* EXP25 really back to the roots, reduce epochs to 5, model might be overfitting to needing both sides of the lane?
-* EXP26 img multiplier- oh yes, more turning, more oscillation too - but no, theee curve is still not ok.
-* EXP27 additional curve dataset (half-open left curve) t1_open_curve.csv
-* EXP28 same dataset, removed dropout layers completely
-
 ---
 
 **Behavioral Cloning Project**
@@ -74,7 +54,7 @@ The model.py file contains the code for training and saving the convolution neur
 # configuration
 USE_FLOYD = True
 DO_TRAIN = True
-SIDE_IMAGE_STEERING_BIAS = 0.4
+SIDE_IMAGE_STEERING_BIAS = 0.2
 VALIDATION_SPLIT = 0.2
 BATCH_SIZE = 32
 PREDICT_IMAGES = ["sample_data/center_2016_12_01_13_31_13_177.jpg", "t2_forward_data/center_2017_03_22_17_03_16_764.jpg"]
@@ -82,8 +62,8 @@ PREDICT_IMAGES = ["sample_data/center_2016_12_01_13_31_13_177.jpg", "t2_forward_
 if USE_FLOYD:
   # running on floydhub
   DATA_FOLDER = "/input/"
-  DATASETS = ["t1_reverse_data.csv", "t1_udacity_data.csv", "t1_open_curve.csv", "t2_forward_data.csv"]
-  EPOCHS = 10
+  DATASETS = ["t1_reverse_data.csv", "t1_udacity_data.csv", "t1_open_curve.csv"]
+  EPOCHS = 7
   OUTPUT_FOLDER = "/output/"
 else:
   # running on local machine
@@ -179,8 +159,7 @@ The model used an adam optimizer, so the learning rate was not tuned manually. T
 model.compile(loss='mse', optimizer='adam')
 ```
 
-# TODO epochs
-# TODO batch size
+The final model was trained for 7 epochs with a batch size of 32
 
 #### 4. Appropriate training data
 
@@ -218,8 +197,6 @@ In order to gauge how well the model was working, I split my image and steering 
 *Current Model Training History*
 
 I recorded two reverse laps on track 1 and trained the model on a combination of the Udacity data and my self-recorded laps. The results looked good but the car kept leaving the track in the half-open curve after the bridge.
-
-# TODO half-open curve after bridge image
 
 To combat this, I recorded multiple runs of forward and backward driving data from that sector. This already resulted in a good overall performance on the whole track. The car would not stick 100% to the track center, but would never leave the track, even at a speed of 20mph
 

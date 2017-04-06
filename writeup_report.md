@@ -45,7 +45,7 @@ The goals / steps of this project are the following:
 [current_model_history]: ./history.png "Current Model Training History"
 [history_with_l2]: ./writeup_images/history_with_l2.png "Training History with L2 regularization"
 [sample_track2]: ./feature_maps/t2_forward_data_center_2017_03_22_17_03_16_764.jpg_original.png "Original image from track 2"
-[activation_track2]: ./feature_maps/t2_forward_data_center_2017_03_22_17_03_16_764.jpg_0_features.png "Activations from image from track 2"
+[activation_track2]: ./writeup_images/features.png "Activations from image from track 2"
 
 
 ## Rubric Points
@@ -103,8 +103,6 @@ def readImagesAndMeasurements(samples, augment=True):
 ```
 
 The script can also be used to a load previous weights from model.h5 and visualize the activations of hidden layers in the network. By default, this is done for the first few convolutional layers and the resulting feature maps are saved in the folder feature_maps. A sample folder is commited to this github repository, but it will be overwritten on the first run of model.py. The PREDICT_IMAGES setting allows to choose images that are used to get the activations. A sample can be seen here:
-
-# TODO remove feature_maps folder, put sample images in writeup_images. Also change the passage above. Crop the activation image, it's not nice now
 
 !["Original image from track 2"][sample_track2]
 *Original image from track 2*

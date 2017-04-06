@@ -141,11 +141,26 @@ model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
 ![Model Architecture][model]
 *Model Architecture*
 
-# TODO Dropout
-# TODO subsampling
-# TODO L2 Regularization
-# TODO cropping
-# TODO Choosing color space
+I used dropout in the flat layers to combat overfitting. I experimented with L2 regularization but there were no positive effects from that (as described later in this document). Of course, as described in the intro video, I crop the images using the builtin layer from keras. 
+
+An example of dropout and cropping:
+
+```python
+model.add(Dense(100))
+model.add(Dropout(0.5))
+
+model.add(Cropping2D(cropping=((70, 25), (0, 0))))
+```
+
+Just like in the previous project, I use additional conv layers in the network that are designed to choose the right color space, instead of choosing the color space manually. It's interesting to see which space the network finds most useful (this can be seen in the activations image above)
+
+The following layers are designed to look for the right color space (a 1x1 filter with depth 10, followed by a 1x1 filter with depth 3):
+
+```python
+model.add(Convolution2D(10, 1, 1, activation="relu"))
+model.add(Convolution2D(3 , 1, 1, activation="relu"))
+```
+
 
 #### 2. Attempts to reduce overfitting in the model
 
@@ -210,8 +225,6 @@ In order to gauge how well the model was working, I split my image and steering 
 !["Current Model Training History"][current_model_history]
 *Current Model Training History*
 
-# TODO other metrics?
-
 I recorded two reverse laps on track 1 and trained the model on a combination of the Udacity data and my self-recorded laps. The results looked good but the car kept leaving the track in the half-open curve after the bridge.
 
 # TODO half-open curve after bridge image
@@ -220,12 +233,9 @@ To combat this, I recorded multiple runs of forward and backward driving data fr
 
 On to track 2, I recorded two laps of forward driving (center driving). When training the model on track 2 only, the results are very promising. The car stays on the center of the road and can drive through the whole track without any problems. However, when using this model or when using models that were trained on track 1 and track 2 together, the performance on track 1 decreases dramatically. The model seems to concentrate too much on the center line, which is missing on track 1. 
 
-To visualize and thus confirm this behaviour, 
-# TODO visualized layers
-
 To combat the overfitting, I added L2 regularization in every layer with a beta value of 0.01. An example can be seen here:
 ```python
-SIDE_IMAGE_STEERING_BIAS = 0.4
+model.add(Dense(100, W_regularizer=l2(0.01)))
 ```
 
 This resulted in beautiful training history graphs (example below), but unfortunately the driving performance was really bad. The model had a very strong bias on straight driving and would leave the track in the first curve. So, L2 regularization was removed.
@@ -274,4 +284,4 @@ applied here:
 samples = oversample(getCSVLinesFromDatasets(DATA_FOLDER, DATASETS))
 ```
 
-
+I experimented with adding / removing oversampling, however the effects were not obvious.

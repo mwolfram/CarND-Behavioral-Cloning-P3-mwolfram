@@ -46,6 +46,7 @@ The goals / steps of this project are the following:
 [history_with_l2]: ./writeup_images/history_with_l2.png "Training History with L2 regularization"
 [sample_track2]: ./feature_maps/t2_forward_data_center_2017_03_22_17_03_16_764.jpg_original.png "Original image from track 2"
 [activation_track2]: ./writeup_images/features.png "Activations from image from track 2"
+[model]: ./model.png "Model Architecture"
 
 
 ## Rubric Points
@@ -125,9 +126,7 @@ This way, I can mix various datasets by just setting the list of data-ids in my 
 
 #### 1. An appropriate model architecture has been employed
 
-# TODO check exact line of model
-
-My model consists of a convolution neural network with 1x1, 3x3 and 5x5 filter sizes and depths between 3 and 64 (model.py lines 173-201): It's basically the NVIDIA model taken from the project introduction video. I experimented with the proposed models (a basic one to see whether training works at all and LeNet) and ended up using the NVIDIA model, as the increase in performance compared to LeNet was clearly visible.
+My model consists of a convolution neural network with 1x1, 3x3 and 5x5 filter sizes and depths between 3 and 64 (model.py, function getNVIDIAModel()): It's the NVIDIA model taken from the project introduction video. I experimented with the proposed models (a basic one to see whether training works at all and LeNet) and ended up using the NVIDIA model, as the increase in performance compared to LeNet was clearly visible.
 
 * The model includes RELU layers to introduce nonlinearity after every single convolutional layer. Example:
 ```python
@@ -139,8 +138,8 @@ model.add(Convolution2D(64, 3, 3, activation="relu"))
 model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
 ```
 
-# TODO model visualization
-![alt text][image1]
+![Model Architecture][model]
+*Model Architecture*
 
 # TODO Dropout
 # TODO subsampling

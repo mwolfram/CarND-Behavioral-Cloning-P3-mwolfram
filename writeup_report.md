@@ -1,11 +1,6 @@
 # CarND-Behavioral-Cloning-P3-mwolfram
 
 ## notes
-* cropping image as described in course
-* training for 5 epochs, batch size 32
-* tried random seed, cannot reproduce the same results, unfortunately. search indicates that this lies deep within keras and tf
-* python generator is being used
-* EXPLAIN: data format expected (directly from zips)
 * RESULTS so far: good driving on t1 with datasets t1_udacity, t1_reverse B32 E5 loss: 0.0173 - val_loss: 0.0173
 * RESULTS so far: good driving on t2 with datasets t1_udacity, t1_reverse, t2_forward B32 E5 - BUT: terrible on t1!, possible reason: focus on center line, which is missing on t1!
 * FURTHER IDEAS: all datasets, but with dropout and L2 reg, layer visualization to know what the network focuses on, graph loss and accuracy
@@ -193,9 +188,6 @@ Training data was chosen to keep the vehicle driving on the road.
 
 For details about how I created the training data, see the next section. 
 
-# TODO add training data description here? maybe as an overview
-
-
 ### Model Architecture and Training Strategy
 
 #### 1. Solution Design Approach
@@ -285,3 +277,9 @@ samples = oversample(getCSVLinesFromDatasets(DATA_FOLDER, DATASETS))
 ```
 
 I experimented with adding / removing oversampling, however the effects were not obvious.
+
+Problems / Shortcomings
+* reproduce runs
+* faster training/testing experience would be nice
+* loss is not a good indicator for how well the model drives
+* 

@@ -104,6 +104,8 @@ def readImagesAndMeasurements(samples, augment=True):
 
 The script can also be used to a load previous weights from model.h5 and visualize the activations of hidden layers in the network. By default, this is done for the first few convolutional layers and the resulting feature maps are saved in the folder feature_maps. A sample folder is commited to this github repository, but it will be overwritten on the first run of model.py. The PREDICT_IMAGES setting allows to choose images that are used to get the activations. A sample can be seen here:
 
+# TODO remove feature_maps folder, put sample images in writeup_images. Also change the passage above. Crop the activation image, it's not nice now
+
 !["Original image from track 2"][sample_track2]
 *Original image from track 2*
 
@@ -229,11 +231,7 @@ This resulted in beautiful training history graphs (example below), but unfortun
 !["Training history with L2 regularization"][history_with_l2]
 *Training history with L2 regularization*
 
-# TOOD training history graph with L2 reg
-
-
-# TODO link to driving videoation
-
+# TODO link to driving video
 
 #### 2. Final Model Architecture
 

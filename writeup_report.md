@@ -212,7 +212,7 @@ This resulted in beautiful training history graphs (example below), but unfortun
 !["Training history with L2 regularization"][history_with_l2]
 *Training history with L2 regularization*
 
-# TODO link to driving video
+The results can be seen in the [Autonomous Driving Video](./video.mp4)
 
 #### 2. Final Model Architecture
 
@@ -255,8 +255,8 @@ samples = oversample(getCSVLinesFromDatasets(DATA_FOLDER, DATASETS))
 
 I experimented with adding / removing oversampling, however the effects were not obvious.
 
-Problems / Shortcomings
-* reproduce runs
-* faster training/testing experience would be nice
-* loss is not a good indicator for how well the model drives
-* 
+### Problems / Open Points
+* It was not possible to reproduce training results, as setting the random seed was never really possible. It seems that keras/tensorflow have random generators that don't rely on the random seed that you can set from outside.
+* An open point is track 2. Although I succeeded in creating models that could cope with track 2, I never got one that could handle both tracks. I suspected that the model was overfitting to one of the tracks and tried to reduce that but the results varied too much and there wasn't an obvious convergence towards a solution.
+* Loss is not a good indicator for how well the model drives. The training and validation losses are very misleading, maybe due to the limited amount of data or due to the imbalance in the data. The only way to tell whether a model worked was to start up the simulator.
+

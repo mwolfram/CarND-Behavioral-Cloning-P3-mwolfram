@@ -239,7 +239,7 @@ I never had to record recovery driving, as I was using imagery from all three ca
 
 For track 2, I recorded two laps of forward driving on the center line. 
 
-To augment the data set, I flipped images and angles and added these new data points. This was necessary because the especially track 1 has a strong bias on left turns, but the model should generalize over left and right turns. Images and measurements are flipped on-the-fly, the code is shown under "Model Architecture and Training Strategy, section 1".
+To augment the data set, I flipped images and angles and added these new data points. This was necessary because especially track 1 has a strong bias on left turns, but the model should generalize over left and right turns. Images and measurements are flipped on-the-fly, the code is shown under "Model Architecture and Training Strategy, section 1".
 
 Another shortcoming of the dataset is that steering information (especially sharp turns) are relatively sparse. I therefore added an oversampling function, which will add csv lines to the dataset multiple times, depending on the absolute value of the steering measurement. I experimented with ln(abs(measurement)) and the measurement as is as multipliers:
 ```python
@@ -258,5 +258,5 @@ I experimented with adding / removing oversampling, however the effects were not
 ### Problems / Open Points
 * It was not possible to reproduce training results, as setting the random seed was never really possible. It seems that keras/tensorflow have random generators that don't rely on the random seed that you can set from outside.
 * An open point is track 2. Although I succeeded in creating models that could cope with track 2, I never got one that could handle both tracks. I suspected that the model was overfitting to one of the tracks and tried to reduce that but the results varied too much and there wasn't an obvious convergence towards a solution.
-* Loss is not a good indicator for how well the model drives. The training and validation losses are very misleading, maybe due to the limited amount of data or due to the imbalance in the data. The only way to tell whether a model worked was to start up the simulator.
+* MSE loss is not a good indicator for how well the model drives. The training and validation losses are very misleading, maybe due to the limited amount of data or due to the imbalance in the data. The only way to tell whether a model worked was to start up the simulator.
 

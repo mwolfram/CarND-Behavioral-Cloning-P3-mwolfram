@@ -3,6 +3,7 @@ import numpy as np
 import sys
 import os
 import math
+#import pydot
 
 # set a fixed random seed
 random.seed(1337)
@@ -21,6 +22,7 @@ import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers import Flatten, Dense, Lambda, Cropping2D, Convolution2D, MaxPooling2D, Dropout
 from keras.regularizers import l2
+#from keras.utils.visualize_util import model_to_dot
 
 # configuration
 USE_FLOYD = True
@@ -34,7 +36,7 @@ if USE_FLOYD:
   # running on floydhub
   DATA_FOLDER = "/input/" 
   DATASETS = ["t1_reverse_data.csv", "t1_udacity_data.csv", "t1_open_curve.csv"]
-  #DATASETS = ["t2_forward_data.csv", "t1_reverse_data.csv", "t1_udacity_data.csv"]
+  #DATASETS = ["t2_forward_data.csv"]
   EPOCHS = 7
   OUTPUT_FOLDER = "/output/"
 else:
@@ -73,6 +75,18 @@ def getImageFromZip(zipname, filename):
   image = cv2.imdecode(np.frombuffer(imagedata, np.uint8), 1)
   return image
 
+# use some images more often - in this case the bigger the steering angle the more often
+def oversample(samples):
+  oversampled = []
+  for line in samples:
+    #oversampled.append(line)
+    measurement = float(line[3])
+    #sample_multiplier = max(1, int(math.log(int((abs(measurement) + 1.0))))) # log
+    sample_multiplier = max(1, int(abs(measurement)))
+    for i in range(sample_multiplier):
+      oversampled.append(line)
+  return oversampled
+
 # reads images and measurements from samples (csv file lines)
 def readImagesAndMeasurements(samples, augment=True):
   images = []
@@ -92,25 +106,17 @@ def readImagesAndMeasurements(samples, augment=True):
       image = cv2.imdecode(np.frombuffer(imagedata, np.uint8), 1)
       
       measurement = float(line[3])
-      #image_multiplier = max(1, int(math.log(int((abs(measurement) + 1.0)))))
-      image_multiplier = 1 # use every image once     
- 
-      # the bigger the steering angle, the more often will the image appear in the dataset 
-      for j in range(image_multiplier):
-        images.append(image)
+      images.append(image)
 
       if i == 0:
         # center image
-        for j in range(image_multiplier):
-          measurements.append(measurement)
+        measurements.append(measurement)
       elif i == 1:
         # left image
-        for j in range(image_multiplier):
-          measurements.append(measurement + SIDE_IMAGE_STEERING_BIAS)
+        measurements.append(measurement + SIDE_IMAGE_STEERING_BIAS)
       elif i == 2:
         # right image
-        for j in range(image_multiplier):
-          measurements.append(measurement - SIDE_IMAGE_STEERING_BIAS)
+        measurements.append(measurement - SIDE_IMAGE_STEERING_BIAS)
 
   if augment:
     augmented_images, augmented_measurements = [], []
@@ -171,17 +177,11 @@ def getNVIDIAModel():
   model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
   model.add(Cropping2D(cropping=((70, 25), (0, 0))))
   model.add(Convolution2D(10, 1, 1, activation="relu"))#, W_regularizer=l2(0.01))) # let the model choose the best color space
-#  model.add(Dropout(1.0))
   model.add(Convolution2D(3 , 1, 1, activation="relu"))#, W_regularizer=l2(0.01))) # --"--
-#  model.add(Dropout(1.0))
-  model.add(Convolution2D(24, 5, 5, subsample=(2, 2)))#,  activation="relu", W_regularizer=l2(0.01)))
-#  model.add(Dropout(1.0))
-  model.add(Convolution2D(36, 5, 5, subsample=(2, 2)))#,  activation="relu", W_regularizer=l2(0.01)))
-#  model.add(Dropout(1.0))
-  model.add(Convolution2D(48, 5, 5, subsample=(2, 2)))#,  activation="relu", W_regularizer=l2(0.01)))
-#  model.add(Dropout(1.0))
+  model.add(Convolution2D(24, 5, 5, subsample=(2, 2)))#, activation="relu"))#, W_regularizer=l2(0.01)))
+  model.add(Convolution2D(36, 5, 5, subsample=(2, 2)))#, activation="relu"))#, W_regularizer=l2(0.01)))
+  model.add(Convolution2D(48, 5, 5, subsample=(2, 2)))#, activation="relu"))#, W_regularizer=l2(0.01)))
   model.add(Convolution2D(64, 3, 3, activation="relu"))#, W_regularizer=l2(0.01)))
-#  model.add(Dropout(1.0))
   model.add(Convolution2D(64, 3, 3, activation="relu"))#, W_regularizer=l2(0.01)))
   model.add(Flatten())
   model.add(Dense(100))#, W_regularizer=l2(0.01)))
@@ -326,15 +326,23 @@ def generateActivationMapsForImages(images, depths, target_folder="feature_maps/
       # save the activation as image
       outputFeatureMap(activation, target_folder + dataset_name + "_" + filename + "_" + str(depth) + "_features.png")
 
+#def saveModelPlot(model):
+#  dot = model_to_dot(model)
+#  dot.write_png(OUTPUT_FOLDER + 'model.png')
+
 
 # =========================================
 # Execute experiment
 
-# read csv data
+# read csv data and oversample to account for imbalanced dataset
+#samples = oversample(getCSVLinesFromDatasets(DATA_FOLDER, DATASETS))
 samples = getCSVLinesFromDatasets(DATA_FOLDER, DATASETS)
 
 # Create NVIDIA model
 model = getNVIDIAModel()
+
+# Save a plot of the model to file
+#saveModelPlot(model)
 
 if DO_TRAIN:
   # train model

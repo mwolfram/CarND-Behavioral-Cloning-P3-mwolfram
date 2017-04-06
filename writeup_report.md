@@ -127,7 +127,7 @@ model.add(Dropout(0.5))
 model.add(Cropping2D(cropping=((70, 25), (0, 0))))
 ```
 
-Just like in the previous project, I use additional conv layers in the network that are designed to choose the right color space, instead of choosing the color space manually. It's interesting to see which space the network finds most useful (this can be seen in the activations image above)
+Just like in the previous project, I use additional conv layers in the network that are designed to choose the right color space, instead of choosing the color space manually. It's interesting to see which space the network finds most useful. (This can be seen in the folder ./feature_maps)
 
 The following layers are designed to look for the right color space (a 1x1 filter with depth 10, followed by a 1x1 filter with depth 3):
 
@@ -186,7 +186,7 @@ for image, measurement in zip(images, measurements):
 return augmented_images, augmented_measurements
 ```
 
-I used all three camera images, with a steering bias of 0.2 initially, later 0.4. This parameter can be set in the following line in the configuration section:
+I used all three camera images, with a steering bias of 0.2 initially, later experimented with 0.4. This parameter can be set in the following line in the configuration section:
 ```python
 SIDE_IMAGE_STEERING_BIAS = 0.4
 ```
